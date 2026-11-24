@@ -1,0 +1,25 @@
+# Alternatif tanpa mengurus server: Render.com (butuh paket berbayar karena perlu disk permanen).
+# Cara: unggah proyek ke GitHub -> Render > New > Blueprint -> pilih repo ini.
+services:
+  - type: web
+    name: cakung-barat
+    runtime: python
+    plan: starter
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn -w 2 -b 0.0.0.0:$PORT --timeout 180 app:app
+    healthCheckPath: /healthz
+    envVars:
+      - key: DATA_DIR
+        value: /var/data
+      - key: COOKIE_SECURE
+        value: "1"
+      - key: BEHIND_PROXY
+        value: "1"
+      - key: ADMIN_USERNAME
+        value: admin
+      - key: ADMIN_PASSWORD
+        sync: false        # diisi sendiri di dashboard Render
+    disk:
+      name: data
+      mountPath: /var/data
+      sizeGB: 5
